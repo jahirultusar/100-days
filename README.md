@@ -4,6 +4,7 @@
 
 > This is a project where I challenge myself to get fit in 100 Days
 > Goal can be changed later
+> theme: startbootstrap-scrolling-nav-gh-pages
 
 Live project link is [here](https://100days.jahirultusar.com/)
 

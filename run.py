@@ -10,12 +10,12 @@ Usage:
     python run.py
 
 """
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 from app import app, db
 
 
-db.init_app(app)
-migrate = Migrate(app, db)
+# db.init_app(app)
+# migrate = Migrate(app, db)
 
 if __name__ == '__main__':
     # with app.app_context():

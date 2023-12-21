@@ -13,6 +13,7 @@ ignore=
 disable=
     ; import-error,
     line-too-long,
+    ; trailing-newlines,
     wrong-import-position,
     missing-module-docstring,
     missing-function-docstring

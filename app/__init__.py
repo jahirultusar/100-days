@@ -35,23 +35,23 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 # Import and register blueprints
-from app.authentication.routes import auth
-# from app.library.routes import catalogue
-# from app.main.routes import main
+# from app.authentication.routes import auth
+from app.dashboard.routes import dashboard
+from app.main.routes import main
 
-app.register_blueprint(auth)
-# app.register_blueprint(catalogue)
-# app.register_blueprint(main)
+# app.register_blueprint(auth)
+app.register_blueprint(dashboard)
+app.register_blueprint(main)
 
-# Global Error Handling
-@app.errorhandler(404)
-def page_not_found(e):
-    """Handles Global 404 errors."""
-    print(f"An unexpected error occurred: {e}")
-    return render_template('404.html'), 404
+# # Global Error Handling
+# @app.errorhandler(404)
+# def page_not_found():
+#     """Handles Global 404 errors."""
+#     # print(f"An unexpected error occurred: {e}")
+#     return render_template('404.html'), 404
 
-@app.errorhandler(500)
-def internal_server_error(e):
-    """Handles Global 500 errors."""
-    print(f"An unexpected error occurred: {e}")
-    return render_template('500.html'), 500
+# @app.errorhandler(500)
+# def internal_server_error():
+#     """Handles Global 500 errors."""
+#     # print(f"An unexpected error occurred: {e}")
+#     return render_template('500.html'), 500
