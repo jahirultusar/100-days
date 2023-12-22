@@ -31,13 +31,13 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///activity.db'
 app.config['SECRET_KEY'] = 'f9185544396453ff88f76487ed37a85b'
 db = SQLAlchemy(app)
-
 bcrypt = Bcrypt(app)
 
 # Import and register blueprints
 # from app.authentication.routes import auth
 from app.dashboard.routes import dashboard
 from app.main.routes import main
+
 
 # app.register_blueprint(auth)
 app.register_blueprint(dashboard)

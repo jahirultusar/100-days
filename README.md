@@ -8,3 +8,4 @@
 
 Live project link is [here](https://100days.jahirultusar.com/)
 
+tree -I 'venv|pycache*'
