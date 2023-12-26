@@ -31,6 +31,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///activity.db'
 app.config['SECRET_KEY'] = 'f9185544396453ff88f76487ed37a85b'
 db = SQLAlchemy(app)
+
 bcrypt = Bcrypt(app)
 
 # Import and register blueprints
@@ -38,20 +39,19 @@ bcrypt = Bcrypt(app)
 from app.dashboard.routes import dashboard
 from app.main.routes import main
 
-
 # app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(main)
 
-# # Global Error Handling
+# Global Error Handling
 # @app.errorhandler(404)
-# def page_not_found():
+# def page_not_found(e):
 #     """Handles Global 404 errors."""
-#     # print(f"An unexpected error occurred: {e}")
+#     print(f"An unexpected error occurred: {e}")
 #     return render_template('404.html'), 404
 
 # @app.errorhandler(500)
-# def internal_server_error():
+# def internal_server_error(e):
 #     """Handles Global 500 errors."""
-#     # print(f"An unexpected error occurred: {e}")
+#     print(f"An unexpected error occurred: {e}")
 #     return render_template('500.html'), 500

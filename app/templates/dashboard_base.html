@@ -199,14 +199,14 @@
                     <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                       <label class="btn btn-sm btn-primary btn-simple active" id="0">
                         <input type="radio" name="options" checked>
-                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Heart rate</span>
+                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Activity</span>
                         <span class="d-block d-sm-none">
                           <i class="tim-icons icon-single-02"></i>
                         </span>
                       </label>
                       <label class="btn btn-sm btn-primary btn-simple" id="1">
                         <input type="radio" class="d-none d-sm-none" name="options">
-                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Workout</span>
+                        <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Steps</span>
                         <span class="d-block d-sm-none">
                           <i class="tim-icons icon-gift-2"></i>
                         </span>
@@ -646,6 +646,7 @@
   <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
   <script src=" {{ url_for('static', filename='js/black-dashboard.min.js') }}"></script><!-- Black Dashboard DEMO methods, don't include it in your project! -->
   <!-- <script src="../assets/demo/demo.js"></script> -->
+  <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
   <script>
     $(document).ready(function() {
       $().ready(function() {

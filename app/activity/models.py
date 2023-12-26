@@ -7,11 +7,22 @@ class User(db.Model):
     username = db.Column(db.String(100), nullable=False)
     email_address = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    steps = db.relationship('StepsData', backref='user', lazy=True)
     workouts = db.relationship('Workout', backref='user', lazy=True)
     strength = db.relationship('Strength', backref='user', lazy=True)
     runs = db.relationship('Run', backref='user', lazy=True)
     fasts = db.relationship('Fasting', backref='user', lazy=True)
     rests = db.relationship('Rest', backref='user', lazy=True)
+
+
+# models.py
+class StepsData(db.Model):
+    """Steps data model"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    steps = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class Workout(db.Model):
     """Daily workout model"""
