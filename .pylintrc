@@ -12,8 +12,9 @@ ignore=
     urls.py,
 disable=
     ; import-error,
+    missing-final-newline,
     line-too-long,
-    ; trailing-newlines,
+    trailing-newlines,
     wrong-import-position,
     missing-module-docstring,
     missing-function-docstring

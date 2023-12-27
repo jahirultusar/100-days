@@ -1,36 +1,24 @@
-from datetime import datetime
-
-# garmin_connect.py
+from datetime import date
+from flask import jsonify
 from garminconnect import (
     Garmin,
     GarminConnectConnectionError,
-    GarminConnectTooManyRequestsError,
     GarminConnectAuthenticationError,
+    GarminConnectTooManyRequestsError,
 )
+def fetch_garmin_data():
+    email = "tusar86@gmail.com"
+    password = "Tu271286!"
 
-class GarminClient:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.client = Garmin(username, password)
+    # Authenticate with GarminConnect
+    garmin_client = Garmin(email, password)
+    garmin_client.login()
+    print("Logged in")
 
-    def get_steps_by_day(self):
-        try:
-            # Authenticate with Garmin Connect
-            self.client.login()
+    # Fetch steps data for today
+    today = date.today()
+    steps_data = garmin_client.get_steps_data(today.isoformat())
+    print(steps_data)
 
-            # Get today's date
-            today = datetime.today().strftime('%Y-%m-%d')
-
-            # Fetch steps data for today
-            steps_data = self.client.get_steps_data(today)
-
-            return steps_data
-
-        except (
-            GarminConnectConnectionError,
-            GarminConnectAuthenticationError,
-            GarminConnectTooManyRequestsError,
-        ) as err:
-            print(f"Error: {err}")
-            return None
+    return jsonify(steps_data)
+fetch_garmin_data()

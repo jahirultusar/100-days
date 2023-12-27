@@ -20,28 +20,32 @@ Example:
         app.run()
 
 """
-
-from flask import Flask, render_template
+import os
+from dotenv import load_dotenv
+from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 # App configuration
 app = Flask(__name__)
+load_dotenv()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///activity.db'
-app.config['SECRET_KEY'] = 'f9185544396453ff88f76487ed37a85b'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)
 
 # Import and register blueprints
 # from app.authentication.routes import auth
-from app.dashboard.routes import dashboard
 from app.main.routes import main
+from app.dashboard.routes import dashboard
+from app.activity.routes import activity
 
 # app.register_blueprint(auth)
-app.register_blueprint(dashboard)
 app.register_blueprint(main)
+app.register_blueprint(dashboard)
+app.register_blueprint(activity)
 
 # Global Error Handling
 # @app.errorhandler(404)
