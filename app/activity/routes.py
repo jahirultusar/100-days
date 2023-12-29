@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask import Blueprint, jsonify
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -75,7 +75,7 @@ def fetch_garmin_data():
                 'total_steps': health_stats['totalSteps'],
                 'net_calorie_goal': health_stats['netCalorieGoal'],
                 'active_calories': health_stats['activeKilocalories'],
-                'burned_calories': health_stats['burnedKilocalories'],
+                'burned_calories': health_stats['bmrKilocalories'] + health_stats['activeKilocalories'],
                 'consumed_calories': health_stats['consumedKilocalories'],
                 'calorie_deficit': health_stats['netRemainingKilocalories'] - health_stats['consumedKilocalories'],
                 'intensity_minutes_goal': health_stats['intensityMinutesGoal'],
@@ -129,7 +129,7 @@ def job():
 scheduler = BackgroundScheduler()
 
 # Schedule the job every 6 hours
-scheduler.add_job(job, 'interval', hours=6)
+scheduler.add_job(job, 'interval', hours=4)
 
 # Start the scheduler
 scheduler.start()
@@ -137,8 +137,12 @@ scheduler.start()
 
 @activity.route('/api/stats', methods=['GET'])
 def get_stats():
-    # Query the database for all GarminData objects
-    data = GarminData.query.all()
+    """Returns the latest Garmin data."""
+        # Calculate the date 10 days ago
+    ten_days_ago = datetime.now() - timedelta(days=10)
+
+    # Query the database for all GarminData objects from the last 10 days
+    data = GarminData.query.filter(GarminData.date >= ten_days_ago).all()
 
     # Convert the data to JSON
     data_json = [datum.to_dict() for datum in data]
