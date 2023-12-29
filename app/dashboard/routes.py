@@ -17,6 +17,11 @@ def user():
     """Dashboard user route"""
     return render_template('dashboard/user.html')
 
+@dashboard.route('/dashboard/log')
+def log():
+    """Dashboard activity log route"""
+    return render_template('dashboard/log.html')
+
 @dashboard.route('/dashboard/tables')
 def tables():
     """Dashboard tables route"""

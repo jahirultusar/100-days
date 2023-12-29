@@ -1,27 +1,27 @@
 import os
-import csv
-from flask import Blueprint, jsonify, current_app
+from datetime import datetime, date
+from flask import Blueprint, jsonify
 from dotenv import load_dotenv
-
+from apscheduler.schedulers.background import BackgroundScheduler
 from garminconnect import (
     Garmin,
     GarminConnectConnectionError,
     GarminConnectAuthenticationError,
     GarminConnectTooManyRequestsError,
 )
+from sqlalchemy.exc import SQLAlchemyError
+from app import db
+from app.activity.models import GarminData
+
 
 # Load environment variables
-
-from app.activity.models import StepsData, HeartRateData
 load_dotenv()
 
-
-# User, Workout, Strength, Run, Fasting, Rest, CalorieIntake, CalorieBurn, CalorieDeficit, Weight,
-
+# Create Blueprint
 activity = Blueprint('activity', __name__)
 
 
-############## Api Starts Here ##############
+
 def garmin_login():
     """Garmin Login with Garmin Connect."""
     email = os.getenv('GARMIN_EMAIL')
@@ -43,79 +43,110 @@ def garmin_login():
     return garmin_client
 
 
-@activity.route('/api/activity', methods=['GET'])
-def fetch_garmin_activities():
-    """Fetches steps data from Garmin Connect API."""
+def fetch_garmin_data():
+    """Fetches data from Garmin."""
     try:
         # Create Garmin client
         garmin_client = garmin_login()
 
-        # Fetch activities
-        activities = garmin_client.get_activities(0, 1)  # Fetch the latest activity
+        # Fetch steps data
+        today = date.today()
 
-        # Print details of the first activity
+        # Fetch latest activities
+        activities = garmin_client.get_activities(0, 1)
         if activities:
-            first_activity = activities[0]  # Rename the variable 'activity' to 'first_activity'
+            active = activities[0]
             filtered_activity = {
-                'Activity Name': first_activity['activityName'],
-                'Activity Type': first_activity['activityType']['typeKey'],
-                'Duration (s)': first_activity['duration'],
-                'Distance (m)': first_activity['distance'],
+                'activity_date': datetime.fromisoformat(active['startTimeLocal']),
+                'activity_name': active['activityName'],
+                'activity_type': active['activityType']['typeKey'],
+                'duration_hour': round(active['duration'] / 3600, 2),  # Convert to hours and round off to 2 decimal places
+                'distance_km': round(active['distance'] / 1000, 2),
             }
-            return jsonify(filtered_activity)
+
+        # Fetch health stats
+        health_stats = garmin_client.get_stats(today.isoformat())
+        if health_stats:
+            filtered_health_stats = {
+                'source': health_stats['source'],
+                'date': datetime.fromisoformat(health_stats['calendarDate']),
+                'last_sync': datetime.fromisoformat(health_stats['lastSyncTimestampGMT']),
+                'daily_step_goal': health_stats['dailyStepGoal'],
+                'total_steps': health_stats['totalSteps'],
+                'net_calorie_goal': health_stats['netCalorieGoal'],
+                'active_calories': health_stats['activeKilocalories'],
+                'burned_calories': health_stats['burnedKilocalories'],
+                'consumed_calories': health_stats['consumedKilocalories'],
+                'calorie_deficit': health_stats['netRemainingKilocalories'] - health_stats['consumedKilocalories'],
+                'intensity_minutes_goal': health_stats['intensityMinutesGoal'],
+                'active_minutes': round(health_stats['activeSeconds'] / 60), # Convert to minutes
+                'average_stress_level': health_stats['averageStressLevel'],
+                'body_battery': health_stats['bodyBatteryMostRecentValue'],
+                'floor_climbed': round(health_stats['floorsAscended']),
+                'max_heart_rate': health_stats['maxHeartRate'],
+                'resting_heart_rate': health_stats['restingHeartRate'],
+                'sleep_time': round(health_stats['sleepingSeconds'] / 3600, 2),
+            }
+
+        # Combine all data into one dictionary
+        data = {
+            'activity_data': filtered_activity,
+            'health_stats': filtered_health_stats,
+        }
+
+        return data
 
     except (
         GarminConnectConnectionError,
         GarminConnectAuthenticationError,
         GarminConnectTooManyRequestsError,
     ) as err:
-        return jsonify(f"No activities found: {err}")
+        return jsonify(f"No data found: {err}")
 
-@activity.route('/api/stepsData', methods=['GET'])
-def fetch_steps_from_csv():
-    """Fetches steps data from a CSV file."""
+
+
+def save_garmin_data(data):
+    """Saves data from Garmin to database."""
+    # Create a new GarminData object
+    garmin_data = GarminData(**data['activity_data'], **data['health_stats'])
+
+    # Add the new GarminData object to the database session
+    db.session.add(garmin_data)
+
+    # Commit the session to save the GarminData object to the database
     try:
-        # Open the CSV file
-        file_path = os.path.join(current_app.root_path, 'static', 'assets', 'data','Steps.csv')
-        with open(file_path, 'r', encoding='utf-8-sig') as file:
-            reader = csv.DictReader(file)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(f"Error occurred: {e}")
 
-            # Read the data into a list of dictionaries
-            data = list(reader)
+def job():
+    """Job to fetch and save Garmin data."""
+    data = fetch_garmin_data()
+    save_garmin_data(data)
 
-            # Iterate over the list to rename the keys
-            for row in data:
-                for key in list(row.keys()):  # Use list to create a copy of keys
-                    new_key = key.strip()
-                    if new_key != key:
-                        row[new_key] = row.pop(key)
-                    if new_key == '':
-                        row['Date'] = row.pop(new_key)
+# Create a scheduler
+scheduler = BackgroundScheduler()
 
-            # Filter the list to include only the 'Date' and 'Actual' fields
-            data = [{'Date': row['Date'], 'Actual': row['Actual']} for row in data]
+# Schedule the job every 6 hours
+scheduler.add_job(job, 'interval', hours=6)
 
-        return jsonify(data)
-
-    except FileNotFoundError:
-        return jsonify({"error": "CSV file not found."}), 400
-    except KeyError:
-        return jsonify({"error": "Required column not found in CSV file."}), 400
+# Start the scheduler
+scheduler.start()
 
 
+@activity.route('/api/stats', methods=['GET'])
+def get_stats():
+    # Query the database for all GarminData objects
+    data = GarminData.query.all()
 
-@activity.route('/api/heartRateData', methods=['GET'])
-def get_heart_rate_data():
-    """Returns heart rate data for the current user."""
-    try:
-        heart_rate_data = HeartRateData.query.all()
-        print(heart_rate_data)
-        data = [{"date": entry.date, "heart_rate": entry.heart_rate} for entry in heart_rate_data]
-        return jsonify(data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # Convert the data to JSON
+    data_json = [datum.to_dict() for datum in data]
 
+    # Return the data as a JSON response
+    return jsonify(data_json)
 
-############## Api Ends Here ##############
-
-
+@activity.route('/api/fetch', methods=['GET'])
+def fetch():
+    job()
+    return jsonify('Data fetched successfully!')
