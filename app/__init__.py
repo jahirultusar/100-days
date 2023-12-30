@@ -20,38 +20,42 @@ Example:
         app.run()
 
 """
-
-from flask import Flask, render_template
+import os
+from dotenv import load_dotenv
+from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 # App configuration
 app = Flask(__name__)
+load_dotenv()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///activity.db'
-app.config['SECRET_KEY'] = 'f9185544396453ff88f76487ed37a85b'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)
 
 # Import and register blueprints
-from app.authentication.routes import auth
-# from app.library.routes import catalogue
-# from app.main.routes import main
+# from app.authentication.routes import auth
+from app.main.routes import main
+from app.dashboard.routes import dashboard
+from app.activity.routes import activity
 
-app.register_blueprint(auth)
-# app.register_blueprint(catalogue)
-# app.register_blueprint(main)
+# app.register_blueprint(auth)
+app.register_blueprint(main)
+app.register_blueprint(dashboard)
+app.register_blueprint(activity)
 
 # Global Error Handling
-@app.errorhandler(404)
-def page_not_found(e):
-    """Handles Global 404 errors."""
-    print(f"An unexpected error occurred: {e}")
-    return render_template('404.html'), 404
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     """Handles Global 404 errors."""
+#     print(f"An unexpected error occurred: {e}")
+#     return render_template('404.html'), 404
 
-@app.errorhandler(500)
-def internal_server_error(e):
-    """Handles Global 500 errors."""
-    print(f"An unexpected error occurred: {e}")
-    return render_template('500.html'), 500
+# @app.errorhandler(500)
+# def internal_server_error(e):
+#     """Handles Global 500 errors."""
+#     print(f"An unexpected error occurred: {e}")
+#     return render_template('500.html'), 500
