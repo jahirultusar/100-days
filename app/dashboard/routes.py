@@ -1,6 +1,6 @@
 
 from flask import Blueprint, render_template
-# from app import db
+from app.activity.models import GarminData
 
 
 dashboard = Blueprint('dashboard', __name__)
@@ -11,9 +11,12 @@ dashboard = Blueprint('dashboard', __name__)
 @dashboard.route('/dashboard')
 def index():
     """Dashboard index route"""
-
-    return render_template('dashboard/dashboard.html')
-
+    last_sync_record = GarminData.query.order_by(GarminData.last_sync.desc()).first()
+    if last_sync_record is not None:
+        last_sync = last_sync_record.last_sync.strftime('%d-%m-%Y %H:%M:%S')
+    else:
+        last_sync = None
+    return render_template('dashboard/dashboard.html', last_sync=last_sync)
 @dashboard.route('/dashboard/user')
 def user():
     """Dashboard user route"""
