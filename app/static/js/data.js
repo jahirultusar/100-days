@@ -365,7 +365,7 @@ demo = {
 
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
-      gradientStroke.addColorStop(1, 'rgba(242, 100, 48,0.1)');
+      gradientStroke.addColorStop(1, 'rgba(242, 100, 48,0.15)');
       gradientStroke.addColorStop(0.2, 'rgba(242, 100, 48,0.0)');
       gradientStroke.addColorStop(0, 'rgba(242, 100, 48,0)');
 
@@ -396,87 +396,6 @@ demo = {
       options: gradientChartOptionsConfigurationWithTooltipPurple
 
     });
-
-
-    // Calorie burned chart
-    // fetch('/api/stats')
-    // .then(response => response.json())
-    // .then(GarminData => {
-    //   var labels = GarminData.map(entry => {
-    //     var date = new Date(entry.health_stats.date);
-    //     return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
-    //   });
-    //   var data = GarminData.map(entry => entry.health_stats.burned_calories);
-
-    //   var ctx = document.getElementById("chartLinePurple").getContext("2d");
-
-    //   var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-    //   gradientStroke.addColorStop(1, 'rgba(242, 100, 48,0.1)');
-    //   gradientStroke.addColorStop(0.2, 'rgba(242, 100, 48,0.0)');
-    //   gradientStroke.addColorStop(0, 'rgba(242, 100, 48,0)');
-
-    //   var chartData = {
-    //     labels: labels,
-    //     datasets: [{
-    //       label: "Calories Burned",
-    //       fill: true,
-    //       backgroundColor: gradientStroke,
-    //       borderColor: '#f2af29',
-    //       borderWidth: 2,
-    //       borderDash: [],
-    //       borderDashOffset: 0.0,
-    //       pointBackgroundColor: '#f2af29',
-    //       pointBorderColor: 'rgba(255,255,255,0)',
-    //       pointHoverBackgroundColor: '#f2af29',
-    //       data: data
-    //     }]
-    //   };
-
-    //   var myChart = new Chart(ctx, {
-    //     type: 'line',
-    //     data: chartData,
-    //     options: gradientChartOptionsConfigurationWithTooltipPurple
-    //   });
-    // })
-    // .catch(error => console.error('Error:', error));
-
-
-  // Calorie burned chart
-  // fetch('/api/stats')
-  // .then(response => response.json())
-  // .then(GarminData => {
-  //   var labels = GarminData.map(entry => {
-  //     var date = new Date(entry.health_stats.date);
-  //     return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
-  //   });
-  //   var calorieData = GarminData.map(entry => entry.health_stats.burned_calories);
-  //   var ctx = document.getElementById("chartLinePurple").getContext("2d");
-
-  //   var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-  //   gradientStroke.addColorStop(1, 'rgba(242, 100, 48,0.1)');
-  //   gradientStroke.addColorStop(0.2, 'rgba(242, 100, 48,0.0)');
-  //   gradientStroke.addColorStop(0, 'rgba(242, 100, 48,0)'); //purple colors
-
-  //   var chartData = {
-  //     labels: labels,
-  //     datasets: [{
-  //       label: "Calories Burned",
-  //       fill: true,
-  //       backgroundColor: gradientStroke,
-  //       borderColor: '#f2af29',
-  //       data: calorieData
-  //     }]
-  //   };
-
-  //   var myChart = new Chart(ctx, {
-  //     type: 'line',
-  //     data: chartData,
-  //     options: gradientChartOptionsConfigurationWithTooltipPurple
-  //   });
-  // })
-  // .catch(error => console.error('Error:', error));
 
     // Calorie In chart
 
@@ -542,8 +461,8 @@ demo = {
         fill: true,
         backgroundColor: gradientStroke,
         hoverBackgroundColor: gradientStroke,
-        borderColor: '#1f8ef1',
-        borderWidth: 2,
+        borderColor: '#F4F1DE',
+        borderWidth: .3,
         borderDash: [],
         borderDashOffset: 0.0,
         data: calorie_deficit_values
@@ -563,52 +482,8 @@ demo = {
 
 
 
-    // Steps chart
-
-
-
-    // var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    // var chart_data = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
-
-
-    // var ctx = document.getElementById("chartBig1").getContext('2d');
-
-    // var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-    // gradientStroke.addColorStop(1, 'rgba(72,72,176,0.1)');
-    // gradientStroke.addColorStop(0.4, 'rgba(72,72,176,0.0)');
-    // gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
-    // var config = {
-    //   type: 'line',
-    //   data: {
-    //     labels: chart_labels,
-    //     datasets: [{
-    //       label: "My First dataset",
-    //       fill: true,
-    //       backgroundColor: gradientStroke,
-    //       borderColor: '#d346b1',
-    //       borderWidth: 2,
-    //       borderDash: [],
-    //       borderDashOffset: 0.0,
-    //       pointBackgroundColor: '#d346b1',
-    //       pointBorderColor: 'rgba(255,255,255,0)',
-    //       pointHoverBackgroundColor: '#d346b1',
-    //       pointBorderWidth: 20,
-    //       pointHoverRadius: 4,
-    //       pointHoverBorderWidth: 15,
-    //       pointRadius: 4,
-    //       data: chart_data,
-    //     }]
-    //   },
-    //   options: gradientChartOptionsConfigurationWithTooltipPurple
-    // };
-
 
     // Big chart at the front end
-    // fetch('/api/stats') // Update the URL accordingly
-    // .then(response => response.json())
-    // .then(GarminData => {
-      // Extract labels and data from the GarminData array
       var steps_labels = GarminData.map(entry => {
         var date = new Date(entry.health_stats.date);
         return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
@@ -641,7 +516,7 @@ demo = {
             pointBorderWidth: 20,
             pointHoverRadius: 4,
             pointHoverBorderWidth: 15,
-            pointRadius: 4,
+            pointRadius: 3,
             data: steps_values,
           }]
         },
@@ -661,8 +536,8 @@ demo = {
     var myChartData = new Chart(ctx, config);
     $("#0").click(function() {
       var data = myChartData.config.data;
-      data.datasets[0].data = step_values;
-      data.labels = step_labels;
+      data.datasets[0].data = steps_values;
+      data.labels = steps_labels;
       myChartData.update();
     });
     // Active Calorie chart
@@ -703,17 +578,17 @@ demo = {
     });
     // Average stress level chart
     $("#4").click(function() {
-      var average_stress_labels = GarminData.map(entry => {
+      var body_battery_label = GarminData.map(entry => {
         var date = new Date(entry.health_stats.date);
         return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
       });
-      var average_stress_values = GarminData.map(entry => Math.round(entry.health_stats.average_stress_level));
+      var body_battery_values = GarminData.map(entry => Math.round(entry.health_stats.body_battery));
       var data = myChartData.config.data;
-      data.datasets[0].data = average_stress_values;
-      data.labels = average_stress_labels;
+      data.datasets[0].data = body_battery_values;
+      data.labels = body_battery_label;
       myChartData.update();
     });
-    // Weight chart
+    // sleep chart
     $("#5").click(function() {
       var sleep_labels = GarminData.map(entry => {
         var date = new Date(entry.health_stats.date);
