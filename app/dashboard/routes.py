@@ -1,5 +1,7 @@
 
 from flask import Blueprint, render_template
+from sqlalchemy import desc
+from app import db
 from app.activity.models import GarminData
 
 
@@ -16,7 +18,16 @@ def index():
         last_sync = last_sync_record.last_sync.strftime('%d-%m-%Y %H:%M:%S')
     else:
         last_sync = None
-    return render_template('dashboard/dashboard.html', last_sync=last_sync)
+
+    # Find and list last Activity
+    # last_activity = GarminData.query.all()
+    last_activity = (db.session.query(GarminData)
+                .group_by(GarminData.activity_date)
+                .order_by(desc(GarminData.activity_date))
+                .all())
+
+    return render_template('dashboard/dashboard.html', last_sync=last_sync, last_activity=last_activity)
+
 @dashboard.route('/dashboard/user')
 def user():
     """Dashboard user route"""

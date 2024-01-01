@@ -415,7 +415,7 @@ demo = {
     var calorie_in_data = {
       labels: calorie_in_labels,
       datasets: [{
-        label: "My First dataset",
+        label: "Calorie In",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#00d6b4',

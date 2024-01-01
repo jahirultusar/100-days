@@ -1,8 +1,7 @@
 
 import os
 from dotenv import load_dotenv
-from flask import Flask, jsonify, current_app
-from datetime import date, timedelta
+from flask import Flask, jsonify
 from datetime import date
 # from app.activity.models import StepsData
 
