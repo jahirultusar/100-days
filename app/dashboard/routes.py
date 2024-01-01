@@ -1,5 +1,6 @@
 
 from flask import Blueprint, render_template
+# from app import db
 
 
 dashboard = Blueprint('dashboard', __name__)
@@ -10,6 +11,7 @@ dashboard = Blueprint('dashboard', __name__)
 @dashboard.route('/dashboard')
 def index():
     """Dashboard index route"""
+
     return render_template('dashboard/dashboard.html')
 
 @dashboard.route('/dashboard/user')

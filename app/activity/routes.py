@@ -12,6 +12,7 @@ from garminconnect import (
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.activity.models import GarminData
+from run import app
 
 
 # Load environment variables
@@ -67,6 +68,9 @@ def fetch_garmin_data():
         # Fetch health stats
         health_stats = garmin_client.get_stats(today.isoformat())
         if health_stats:
+            consumed_kilocalories = health_stats.get('consumedKilocalories', 0.0)
+            if consumed_kilocalories is None:
+                consumed_kilocalories = 0.0
             filtered_health_stats = {
                 'source': health_stats['source'],
                 'date': datetime.fromisoformat(health_stats['calendarDate']),
@@ -77,7 +81,8 @@ def fetch_garmin_data():
                 'active_calories': health_stats['activeKilocalories'],
                 'burned_calories': health_stats['bmrKilocalories'] + health_stats['activeKilocalories'],
                 'consumed_calories': health_stats['consumedKilocalories'],
-                'calorie_deficit': health_stats['netRemainingKilocalories'] - health_stats['consumedKilocalories'],
+                'calorie_deficit': health_stats['netRemainingKilocalories'] - consumed_kilocalories,
+                # 'calorie_deficit': health_stats['netRemainingKilocalories'] - health_stats['consumedKilocalories'],
                 'intensity_minutes_goal': health_stats['intensityMinutesGoal'],
                 'active_minutes': round(health_stats['activeSeconds'] / 60), # Convert to minutes
                 'average_stress_level': health_stats['averageStressLevel'],
@@ -86,6 +91,8 @@ def fetch_garmin_data():
                 'max_heart_rate': health_stats['maxHeartRate'],
                 'resting_heart_rate': health_stats['restingHeartRate'],
                 'sleep_time': round(health_stats['sleepingSeconds'] / 3600, 2),
+
+
             }
 
         # Combine all data into one dictionary
@@ -122,14 +129,15 @@ def save_garmin_data(data):
 
 def job():
     """Job to fetch and save Garmin data."""
-    data = fetch_garmin_data()
-    save_garmin_data(data)
+    with app.app_context():
+        data = fetch_garmin_data()
+        save_garmin_data(data)
 
 # Create a scheduler
 scheduler = BackgroundScheduler()
 
 # Schedule the job every 6 hours
-scheduler.add_job(job, 'interval', hours=4)
+scheduler.add_job(job, 'interval', hours=1)
 
 # Start the scheduler
 scheduler.start()
