@@ -4,17 +4,17 @@ from flask import Blueprint, jsonify
 from dotenv import load_dotenv
 # from apscheduler.schedulers.background import BackgroundSchedulers
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from garminconnect import (
     Garmin,
     GarminConnectConnectionError,
     GarminConnectAuthenticationError,
     GarminConnectTooManyRequestsError,
 )
-from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.activity.models import GarminData
 # from sqlalchemy import func
-# from run import app
+from app import app
 
 
 # Load environment variables
@@ -70,12 +70,8 @@ def fetch_garmin_data():
         # Fetch health stats
         health_stats = garmin_client.get_stats(today.isoformat())
         if health_stats:
-            # consumed_calories = 0.00
-            # if consumed_kilocalories is None:
-            #     # consumed_kilocalories = health_stats.get('consumedKilocalories', 0.0)
-            #     consumed_kilocalories = 0.00
-            # else:
-            #     consumed_kilocalories = health_stats['consumedKilocalories']
+            # Replace None values with 0
+            health_stats = {k: (0 if v is None else v) for k, v in health_stats.items()}
             filtered_health_stats = {
                 'source': health_stats['source'],
                 'date': datetime.fromisoformat(health_stats['calendarDate']),
@@ -87,7 +83,9 @@ def fetch_garmin_data():
                 'burned_calories': health_stats['bmrKilocalories'] + health_stats['activeKilocalories'],
                 'consumed_calories': health_stats['consumedKilocalories'],
                 # 'calorie_deficit': health_stats['netRemainingKilocalories'] - consumed_kilocalories,
-                'calorie_deficit': int(health_stats['bmrKilocalories'] + health_stats['activeKilocalories']) - int(health_stats['consumedKilocalories']),
+                # 'calorie_deficit': int(health_stats['bmrKilocalories'] + health_stats['activeKilocalories']) - int(health_stats['consumedKilocalories']),
+                'calorie_deficit': int(health_stats.get('bmrKilocalories', 0) + health_stats.get('activeKilocalories', 0)) - int(health_stats.get('consumedKilocalories', 0)),
+                # 'calorie_deficit': int(float(health_stats.get('bmrKilocalories', 0) or 0) + float(health_stats.get('activeKilocalories', 0) or 0)) - int(float(health_stats.get('consumedKilocalories', 0) or 0)),
                 'intensity_minutes_goal': health_stats['intensityMinutesGoal'],
                 'active_minutes': round(health_stats['activeSeconds'] / 60), # Convert to minutes
                 'average_stress_level': health_stats['averageStressLevel'],
@@ -133,8 +131,9 @@ def save_garmin_data(data):
 
 def job():
     """Job to fetch and save Garmin data."""
-    data = fetch_garmin_data()
-    save_garmin_data(data)
+    with app.app_context():
+        data = fetch_garmin_data()
+        save_garmin_data(data)
 
 # # Create a scheduler
 # scheduler = BackgroundScheduler()
