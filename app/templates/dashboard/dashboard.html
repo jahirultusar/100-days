@@ -1,1 +1,46 @@
 {% extends 'dashboard_base.html' %}
+
+{% block last_activity %}
+
+    <div class="col-lg-6 col-md-12">
+      <div class="card ">
+        <div class="card-header">
+          <h4 class="card-title"> Latest Activities</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table tablesorter " id="">
+              <thead class=" text-primary">
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th class="text-center">
+                    Duration (h)
+                  </th>
+                  <th class="text-center">
+                    Distance(km)
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for activity in last_activity %}
+                <tr>
+                  <td>{{ activity.activity_name }}</td>
+                  <td>{{ activity.activity_date }}</td>
+                  <td>{{ activity.activity_type }}</td>
+                  <td>{{ activity.duration_hour }}</td>
+                  {% if activity.distance_km == none %}
+                    <td>N/A</td>
+                  {% else %}
+                    <td>{{ activity.distance_km }}</td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

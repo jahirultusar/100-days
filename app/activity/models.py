@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class User(db.Model):
     """User Model"""
@@ -22,11 +23,11 @@ class GarminData(db.Model):
     last_sync = db.Column(db.DateTime)
     daily_step_goal = db.Column(db.Integer)
     total_steps = db.Column(db.Integer)
-    net_calorie_goal = db.Column(db.Integer)
-    active_calories = db.Column(db.Integer)
-    burned_calories = db.Column(db.Integer)
-    consumed_calories = db.Column(db.Integer)
-    calorie_deficit = db.Column(db.Integer)
+    net_calorie_goal = db.Column(db.Float)
+    active_calories = db.Column(db.Float)
+    burned_calories = db.Column(db.Float)
+    consumed_calories = db.Column(db.Float)
+    calorie_deficit = db.Column(db.Float)
     intensity_minutes_goal = db.Column(db.Integer)
     active_minutes = db.Column(db.Float)
     average_stress_level = db.Column(db.Integer)
@@ -35,6 +36,7 @@ class GarminData(db.Model):
     max_heart_rate = db.Column(db.Integer)
     resting_heart_rate = db.Column(db.Integer)
     sleep_time = db.Column(db.Float)
+    last_created = db.Column(db.DateTime, default=datetime.utcnow)
 
 
     def to_dict(self):
@@ -50,10 +52,10 @@ class GarminData(db.Model):
                 'source': self.source,
                 'date': self.date,
                 'last_sync': self.last_sync,
-                'daily_step_goall': int(self.daily_step_goal),
+                'daily_step_goall': self.daily_step_goal,
                 'total_steps': int(self.total_steps),
-                'net_calorie_goal': int(self.net_calorie_goal),
-                'active_calories': int(self.active_calories),
+                'net_calorie_goal': self.net_calorie_goal,
+                'active_calories': self.active_calories,
                 'burned_calories': self.burned_calories,
                 'consumed_calories': self.consumed_calories,
                 'calorie_deficit': self.calorie_deficit,
@@ -65,5 +67,6 @@ class GarminData(db.Model):
                 'max_heart_rate': self.max_heart_rate,
                 'resting_heart_rate': self.resting_heart_rate,
                 'sleep_time': self.sleep_time,
+                'last_created': self.last_created,
             },
         }
