@@ -24,13 +24,13 @@
   <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='css/black-dashboard.css') }}" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="../assets/demo/demo.css" rel="stylesheet" />
+  <!-- <link href="{{ url_for('static', filename='css/demo.css') }}" rel="stylesheet" /> -->
 </head>
 {% endblock %}
 
 <body class="">
   <div class="wrapper">
-    <div class="sidebar" data-color="green">
+    <div class="sidebar" data-color="orange">
       <!--
         Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red"
     -->
@@ -198,7 +198,7 @@
                 <div class="row">
                   <div class="col-sm-6 text-left">
 
-                    <h5 class="card-category">last synced: {{ last_sync }}</h5>
+                    <h5 class="card-category">last synced: {{ last_sync }} | Source : GARMIN | 1% Every day</h5>
                     <h2 class="card-title"><p>Day: {{ count_up_day }} / 100</p></h2>
                   </div>
                   <div class="col-sm-6">
