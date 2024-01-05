@@ -23,8 +23,11 @@ migrate = Migrate(app, db)
 # Create a scheduler
 scheduler = BackgroundScheduler()
 
-# Schedule the job every 6 hours
-scheduler.add_job(job, 'interval', hours=4)
+# Schedule the job in AM
+scheduler.add_job(job, 'cron', hour=11, minute=55)
+
+# Schedule the job in PM
+scheduler.add_job(job, 'cron', hour=23, minute=55)
 
 # Start the scheduler
 scheduler.start()

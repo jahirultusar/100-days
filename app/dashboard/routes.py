@@ -41,6 +41,7 @@ def index():
                 .order_by(desc(GarminData.activity_date))
                 .all())
 
+
     return render_template('dashboard/dashboard.html', last_sync=last_sync, last_activity=last_activity, count_up_day=count_up_day)
 
 @dashboard.route('/dashboard/user')

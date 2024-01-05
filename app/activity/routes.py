@@ -2,7 +2,6 @@ import os
 from datetime import datetime, date, timedelta
 from flask import Blueprint, jsonify
 from dotenv import load_dotenv
-# from apscheduler.schedulers.background import BackgroundSchedulers
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from garminconnect import (
@@ -13,7 +12,6 @@ from garminconnect import (
 )
 from app import db
 from app.activity.models import GarminData
-# from sqlalchemy import func
 from app import app
 
 
@@ -70,8 +68,6 @@ def fetch_garmin_data():
         # Fetch health stats
         health_stats = garmin_client.get_stats(today.isoformat())
         if health_stats:
-            # Replace None values with 0
-            health_stats = {k: (0 if v is None else v) for k, v in health_stats.items()}
             filtered_health_stats = {
                 'source': health_stats['source'],
                 'date': datetime.fromisoformat(health_stats['calendarDate']),
@@ -80,12 +76,9 @@ def fetch_garmin_data():
                 'total_steps': health_stats['totalSteps'],
                 'net_calorie_goal': health_stats['netCalorieGoal'],
                 'active_calories': health_stats['activeKilocalories'],
-                'burned_calories': health_stats['bmrKilocalories'] + health_stats['activeKilocalories'],
                 'consumed_calories': health_stats['consumedKilocalories'],
-                # 'calorie_deficit': health_stats['netRemainingKilocalories'] - consumed_kilocalories,
-                # 'calorie_deficit': int(health_stats['bmrKilocalories'] + health_stats['activeKilocalories']) - int(health_stats['consumedKilocalories']),
-                'calorie_deficit': int(health_stats.get('bmrKilocalories', 0) + health_stats.get('activeKilocalories', 0)) - int(health_stats.get('consumedKilocalories', 0)),
-                # 'calorie_deficit': int(float(health_stats.get('bmrKilocalories', 0) or 0) + float(health_stats.get('activeKilocalories', 0) or 0)) - int(float(health_stats.get('consumedKilocalories', 0) or 0)),
+                'calorie_deficit': int(float(health_stats.get('bmrKilocalories', 0) or 0) + float(health_stats.get('activeKilocalories', 0) or 0)) - int(float(health_stats.get('consumedKilocalories', 0) or 0)),
+                'burned_calories': (health_stats.get('bmrKilocalories') or 0) + (health_stats.get('activeKilocalories') or 0),
                 'intensity_minutes_goal': health_stats['intensityMinutesGoal'],
                 'active_minutes': round(health_stats['activeSeconds'] / 60), # Convert to minutes
                 'average_stress_level': health_stats['averageStressLevel'],
@@ -134,41 +127,6 @@ def job():
     with app.app_context():
         data = fetch_garmin_data()
         save_garmin_data(data)
-
-# # Create a scheduler
-# scheduler = BackgroundScheduler()
-
-# # Schedule the job every 6 hours
-# scheduler.add_job(job, 'interval', hours=2)
-
-# # Start the scheduler
-# scheduler.start()
-
-
-
-# @activity.route('/api/stats', methods=['GET'])
-# def get_stats():
-#     """Returns the latest Garmin data."""
-#         # Calculate the date 10 days ago
-#     ten_days_ago = datetime.now() - timedelta(days=10)
-
-#     # Query the database for all GarminData objects from the last 10 days
-#     # data = GarminData.query.filter(GarminData.date >= ten_days_ago).all()
-#     # data = (GarminData.query
-#     #         .order_by(GarminData.last_sync).first()
-#     #         .filter(GarminData.date >= ten_days_ago)
-#     #         .all())
-#     data = (db.session.query(GarminData)
-#                 .group_by(GarminData.last_sync)
-#                 .order_by((GarminData.date))
-#                 .filter(GarminData.date >= ten_days_ago)
-    #             .all())
-
-    # # Convert the data to JSON
-    # data_json = [datum.to_dict() for datum in data]
-
-    # # Return the data as a JSON response
-    # return jsonify(data_json)
 
 
 @activity.route('/api/stats', methods=['GET'])

@@ -67,6 +67,6 @@ class GarminData(db.Model):
                 'max_heart_rate': self.max_heart_rate,
                 'resting_heart_rate': self.resting_heart_rate,
                 'sleep_time': self.sleep_time,
-                'last_created': self.last_created,
+                # 'last_created': self.last_created,
             },
         }
