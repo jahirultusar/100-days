@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from sqlalchemy import desc
 from app import db
 from app.activity.models import GarminData
@@ -47,22 +47,26 @@ def index():
 @dashboard.route('/dashboard/user')
 def user():
     """Dashboard user route"""
-    return render_template('dashboard/user.html')
+    # return render_template('dashboard/user.html')
+    return redirect (url_for('dashboard.index'))
 
 @dashboard.route('/dashboard/log')
 def log():
     """Dashboard activity log route"""
-    return render_template('dashboard/log.html')
+    # return render_template('dashboard/log.html')
+    return redirect (url_for('dashboard.index'))
 
 @dashboard.route('/dashboard/tables')
 def tables():
     """Dashboard tables route"""
-    return render_template('dashboard/data_tables.html')
+    # return render_template('dashboard/data_tables.html')
+    return redirect (url_for('dashboard.index'))
 
 @dashboard.route('/dashboard/icons')
 def icons():
     """Dashboard icons route"""
-    return render_template('dashboard/icons.html')
+    # return render_template('dashboard/icons.html')
+    return redirect (url_for('dashboard.index'))
 
 # ############## Routes Ends Here ##############
 

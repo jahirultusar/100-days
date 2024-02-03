@@ -141,9 +141,13 @@ def get_stats():
                 .filter(GarminData.date >= ten_days_ago)
                 .subquery())
 
+    # # Query the database for the GarminData objects with the latest timestamp for each day
+    # data = (db.session.query(GarminData)
+    #             .join(subquery, db.and_(func.date(GarminData.date) == subquery.c.date, GarminData.last_sync == subquery.c.max_last_sync))
+    #             .all())
     # Query the database for the GarminData objects with the latest timestamp for each day
     data = (db.session.query(GarminData)
-                .join(subquery, db.and_(func.date(GarminData.date) == subquery.c.date, GarminData.last_sync == subquery.c.max_last_sync))
+                .join(subquery, db.and_(GarminData.date == subquery.c.date, GarminData.last_sync == subquery.c.max_last_sync))
                 .all())
 
     # Convert the data to JSON
